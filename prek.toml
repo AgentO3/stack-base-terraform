@@ -46,7 +46,6 @@ files = '\.tf$'
 [[repos.hooks]]
 id = "terraform_validate"
 files = '\.tf$'
-args = ["--retry-on-error"]
 
 [[repos.hooks]]
 id = "terraform_checkov"
