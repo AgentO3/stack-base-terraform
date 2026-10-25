@@ -35,6 +35,7 @@ GitHub Actions ──OIDC──▶ IAM role ──assume──▶ AWS account
 environments/dev/     root module, own state key, own budget and retention
 environments/prod/    root module, own state key, own budget and retention
 modules/baseline/     the reusable floor: audit, guardrails, budget, deploy role
+projects/             workloads layered on the baseline (see projects/README.md)
 verify/               one verifier per ADR, plus the BDR contract check
 ```
 
