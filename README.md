@@ -79,6 +79,8 @@ Then copy `environments/<env>/backend.hcl.example` to `backend.hcl`, fill it in,
 3. Merging to `main` reruns the plan and applies that saved plan through the OIDC role.
 4. `prod` is gated by a GitHub `environment:` with required reviewers.
 
+The `plan` and `apply` jobs stay skipped until the repository variable `AWS_ROLE_ARN` is set and a `backend.hcl` exists for the target environment. The offline gate runs on every push and pull request regardless.
+
 ### 5. Invariants
 
 - Terraform CLI is pinned exactly (`= 1.8.4`); providers use pessimistic constraints.

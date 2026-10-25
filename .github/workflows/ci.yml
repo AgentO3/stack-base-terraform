@@ -30,25 +30,25 @@ jobs:
       - name: Install Terraform
         run: |
           set -euo pipefail
-          curl -fsSLo /tmp/terraform.zip \
+          curl -fsSLo "/tmp/terraform_${TF_VERSION}_linux_amd64.zip" \
             "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip"
           curl -fsSLo /tmp/SHA256SUMS \
             "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_SHA256SUMS"
           (cd /tmp && grep "terraform_${TF_VERSION}_linux_amd64.zip" SHA256SUMS | sha256sum -c -)
-          unzip -o /tmp/terraform.zip -d /usr/local/bin
+          unzip -o "/tmp/terraform_${TF_VERSION}_linux_amd64.zip" -d /usr/local/bin
           terraform version
 
       - name: Install prek
         run: pipx install "prek==0.5.7"
+
+      - name: Initialise
+        run: make init
 
       - name: Run hooks
         run: prek run --all-files --show-diff-on-failure
 
       - name: Format check
         run: make fmt-check
-
-      - name: Initialise
-        run: make init
 
       - name: Validate
         run: make validate
@@ -66,7 +66,7 @@ jobs:
 
   plan:
     name: plan
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && vars.AWS_ROLE_ARN != ''
     needs: gate
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -85,12 +85,12 @@ jobs:
       - name: Install Terraform
         run: |
           set -euo pipefail
-          curl -fsSLo /tmp/terraform.zip \
+          curl -fsSLo "/tmp/terraform_${TF_VERSION}_linux_amd64.zip" \
             "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip"
           curl -fsSLo /tmp/SHA256SUMS \
             "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_SHA256SUMS"
           (cd /tmp && grep "terraform_${TF_VERSION}_linux_amd64.zip" SHA256SUMS | sha256sum -c -)
-          unzip -o /tmp/terraform.zip -d /usr/local/bin
+          unzip -o "/tmp/terraform_${TF_VERSION}_linux_amd64.zip" -d /usr/local/bin
 
       - name: Assume deploy role via OIDC
         run: |
@@ -127,7 +127,7 @@ jobs:
 
   apply:
     name: apply dev
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.AWS_ROLE_ARN != ''
     needs: gate
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -148,12 +148,12 @@ jobs:
       - name: Install Terraform
         run: |
           set -euo pipefail
-          curl -fsSLo /tmp/terraform.zip \
+          curl -fsSLo "/tmp/terraform_${TF_VERSION}_linux_amd64.zip" \
             "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip"
           curl -fsSLo /tmp/SHA256SUMS \
             "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_SHA256SUMS"
           (cd /tmp && grep "terraform_${TF_VERSION}_linux_amd64.zip" SHA256SUMS | sha256sum -c -)
-          unzip -o /tmp/terraform.zip -d /usr/local/bin
+          unzip -o "/tmp/terraform_${TF_VERSION}_linux_amd64.zip" -d /usr/local/bin
 
       - name: Assume deploy role via OIDC
         run: |
