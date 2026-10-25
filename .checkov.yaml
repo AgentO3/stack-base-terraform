@@ -7,3 +7,14 @@ directory:
 skip-path:
   - .terraform
   - docs/specs
+# Audit-log buckets deliberately do not carry the three controls below.
+# Access logging would make the log bucket log into itself; cross-Region
+# replication needs a second Region and a second bucket, which is a
+# continuity decision for the account, not a property of the baseline;
+# event notifications need a consumer that this stack does not own.
+# The S3 rules that do matter here (public access, encryption, versioning,
+# lifecycle) are enforced and tested.
+skip-check:
+  - CKV_AWS_18
+  - CKV_AWS_144
+  - CKV2_AWS_62

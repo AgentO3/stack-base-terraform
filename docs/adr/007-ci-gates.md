@@ -26,7 +26,9 @@ Terraform fails late: an unformatted file is a review distraction, an invalid re
 
 We will run `terraform fmt -check -recursive`, `terraform validate` in every root and the module, `terraform test` with mock providers, and Checkov with a repository `.checkov.yaml`, and treat any failure as a build failure.
 
-`terraform test` uses `mock_provider`, so the contract tests run with no credentials and no network calls to AWS. Checkov currently reports 60 passing checks and zero findings; the gate is not configured to skip anything.
+`terraform test` uses `mock_provider`, so the contract tests run with no credentials and no network calls to AWS. Checkov reports 124 passing checks and zero findings; three S3 hardening checks are waived in `.checkov.yaml` with a written reason because they conflict with the purpose of an audit-log bucket.
+
+The waiver list is deliberately short and each entry carries its rationale. Anything else that fails is a build failure.
 
 ## Consequences
 

@@ -87,6 +87,21 @@ resource "aws_kms_alias" "prompts" {
   target_key_id = aws_kms_key.prompts.key_id
 }
 
+resource "aws_kms_key_policy" "prompts" {
+  key_id = aws_kms_key.prompts.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Sid       = "EnableAccountAdministration"
+      Effect    = "Allow"
+      Principal = { AWS = "arn:${local.partition}:iam::${local.account_id}:root" }
+      Action    = "kms:*"
+      Resource  = "*"
+    }]
+  })
+}
+
 resource "aws_cloudwatch_log_group" "prompts" {
   name              = "/aws/bedrock/${var.environment}/invocations"
   retention_in_days = var.log_retention_days

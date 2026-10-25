@@ -61,6 +61,21 @@ resource "aws_kms_alias" "logs" {
   target_key_id = aws_kms_key.logs.key_id
 }
 
+resource "aws_kms_key_policy" "logs" {
+  key_id = aws_kms_key.logs.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Sid       = "EnableAccountAdministration"
+      Effect    = "Allow"
+      Principal = { AWS = "arn:${local.partition}:iam::${local.account_id}:root" }
+      Action    = "kms:*"
+      Resource  = "*"
+    }]
+  })
+}
+
 # --- Audit log bucket -------------------------------------------------------
 
 resource "aws_s3_bucket" "logs" {
@@ -254,6 +269,14 @@ resource "aws_s3_bucket" "config" {
   force_destroy = false
 
   tags = local.tags
+}
+
+resource "aws_s3_bucket_versioning" "config" {
+  bucket = aws_s3_bucket.config.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "config" {
