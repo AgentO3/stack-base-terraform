@@ -1,0 +1,9 @@
+framework:
+  - terraform
+compact: true
+quiet: true
+directory:
+  - .
+skip-path:
+  - .terraform
+  - docs/specs

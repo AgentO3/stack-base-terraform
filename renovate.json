@@ -1,0 +1,45 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "timezone": "America/New_York",
+  "dependencyDashboard": true,
+  "prConcurrentLimit": 5,
+  "prHourlyLimit": 2,
+  "schedule": ["after 8am and before 6pm every weekday"],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 9am on monday"]
+  },
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security"],
+    "prPriority": 10
+  },
+  "packageRules": [
+    {
+      "description": "Batch routine Terraform provider and module bumps weekly.",
+      "matchManagers": ["terraform"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "groupName": "terraform providers",
+      "schedule": ["before 9am on monday"]
+    },
+    {
+      "description": "Never automerge major provider upgrades.",
+      "matchManagers": ["terraform"],
+      "matchUpdateTypes": ["major"],
+      "automerge": false
+    },
+    {
+      "description": "Pin GitHub Actions digests; review majors separately.",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["digest", "pin"],
+      "groupName": "github actions"
+    },
+    {
+      "description": "Security updates are never batched with routine bumps.",
+      "matchUpdateTypes": ["security"],
+      "groupName": null,
+      "schedule": [],
+      "automerge": false
+    }
+  ]
+}

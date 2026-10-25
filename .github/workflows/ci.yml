@@ -1,0 +1,182 @@
+name: ci
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TF_VERSION: 1.8.4
+
+jobs:
+  gate:
+    name: offline gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install Terraform
+        run: |
+          set -euo pipefail
+          curl -fsSLo /tmp/terraform.zip \
+            "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip"
+          curl -fsSLo /tmp/SHA256SUMS \
+            "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_SHA256SUMS"
+          (cd /tmp && grep "terraform_${TF_VERSION}_linux_amd64.zip" SHA256SUMS | sha256sum -c -)
+          unzip -o /tmp/terraform.zip -d /usr/local/bin
+          terraform version
+
+      - name: Install prek
+        run: pipx install "prek==0.5.7"
+
+      - name: Run hooks
+        run: prek run --all-files --show-diff-on-failure
+
+      - name: Format check
+        run: make fmt-check
+
+      - name: Initialise
+        run: make init
+
+      - name: Validate
+        run: make validate
+
+      - name: Contract tests
+        run: make test
+
+      - name: Policy scan
+        run: |
+          pipx install "checkov==3.2.520"
+          make scan
+
+      - name: Verify decisions
+        run: make verify
+
+  plan:
+    name: plan
+    if: github.event_name == 'pull_request'
+    needs: gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
+      TF_ENV: dev
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install Terraform
+        run: |
+          set -euo pipefail
+          curl -fsSLo /tmp/terraform.zip \
+            "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip"
+          curl -fsSLo /tmp/SHA256SUMS \
+            "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_SHA256SUMS"
+          (cd /tmp && grep "terraform_${TF_VERSION}_linux_amd64.zip" SHA256SUMS | sha256sum -c -)
+          unzip -o /tmp/terraform.zip -d /usr/local/bin
+
+      - name: Assume deploy role via OIDC
+        run: |
+          set -euo pipefail
+          token="$(curl -fsS \
+            -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sts.amazonaws.com" | jq -r .value)"
+          creds="$(aws sts assume-role-with-web-identity \
+            --role-arn "${ROLE_ARN}" \
+            --role-session-name "gha-${GITHUB_RUN_ID}" \
+            --web-identity-token "${token}" \
+            --duration-seconds 3600 \
+            --query Credentials --output json)"
+          {
+            echo "AWS_ACCESS_KEY_ID=$(jq -r .AccessKeyId <<<"${creds}")"
+            echo "AWS_SECRET_ACCESS_KEY=$(jq -r .SecretAccessKey <<<"${creds}")"
+            echo "AWS_SESSION_TOKEN=$(jq -r .SessionToken <<<"${creds}")"
+          } >>"${GITHUB_ENV}"
+
+      - name: Plan
+        run: |
+          set -euo pipefail
+          terraform -chdir="environments/${TF_ENV}" init -input=false -lockfile=readonly \
+            -backend-config="backend.hcl"
+          terraform -chdir="environments/${TF_ENV}" plan -input=false -lock-timeout=5m -out=plan.tfplan
+          terraform -chdir="environments/${TF_ENV}" show -no-color plan.tfplan >plan.txt
+
+      - name: Publish plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: plan-${{ env.TF_ENV }}
+          path: environments/${{ env.TF_ENV }}/plan.txt
+          retention-days: 7
+
+  apply:
+    name: apply dev
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
+    environment:
+      name: development
+    env:
+      ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
+      TF_ENV: dev
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install Terraform
+        run: |
+          set -euo pipefail
+          curl -fsSLo /tmp/terraform.zip \
+            "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip"
+          curl -fsSLo /tmp/SHA256SUMS \
+            "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_SHA256SUMS"
+          (cd /tmp && grep "terraform_${TF_VERSION}_linux_amd64.zip" SHA256SUMS | sha256sum -c -)
+          unzip -o /tmp/terraform.zip -d /usr/local/bin
+
+      - name: Assume deploy role via OIDC
+        run: |
+          set -euo pipefail
+          token="$(curl -fsS \
+            -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sts.amazonaws.com" | jq -r .value)"
+          creds="$(aws sts assume-role-with-web-identity \
+            --role-arn "${ROLE_ARN}" \
+            --role-session-name "gha-${GITHUB_RUN_ID}" \
+            --web-identity-token "${token}" \
+            --duration-seconds 3600 \
+            --query Credentials --output json)"
+          {
+            echo "AWS_ACCESS_KEY_ID=$(jq -r .AccessKeyId <<<"${creds}")"
+            echo "AWS_SECRET_ACCESS_KEY=$(jq -r .SecretAccessKey <<<"${creds}")"
+            echo "AWS_SESSION_TOKEN=$(jq -r .SessionToken <<<"${creds}")"
+          } >>"${GITHUB_ENV}"
+
+      - name: Apply reviewed plan
+        run: |
+          set -euo pipefail
+          terraform -chdir="environments/${TF_ENV}" init -input=false -lockfile=readonly \
+            -backend-config="backend.hcl"
+          terraform -chdir="environments/${TF_ENV}" plan -input=false -lock-timeout=5m -out=plan.tfplan
+          terraform -chdir="environments/${TF_ENV}" apply -input=false -lock-timeout=5m plan.tfplan
