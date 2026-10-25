@@ -52,6 +52,10 @@ verify: ## Run every ADR and BDR verifier.
 .PHONY: check
 check: fmt-check validate test scan verify ## Run the full local gate.
 
+.PHONY: evidence
+evidence: ## Regenerate the evidence bundle under evidence/.
+	bash evidence/generate.sh
+
 .PHONY: prek-install
 prek-install: ## Install prek hooks for this repository.
 	prek install --prepare-hooks
