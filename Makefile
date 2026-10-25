@@ -3,7 +3,9 @@
 SHELL := /bin/bash
 
 ENVS := dev prod
-TF_ROOTS := environments/dev environments/prod modules/baseline
+PROJECT_ROOTS := $(patsubst %/versions.tf,%,$(wildcard projects/*/versions.tf))
+TF_ROOTS := environments/dev environments/prod modules/baseline $(PROJECT_ROOTS)
+TEST_ROOTS := modules/baseline $(PROJECT_ROOTS)
 TF_VERSION := 1.8.4
 
 .PHONY: help
@@ -34,7 +36,10 @@ validate: ## Validate every root module and the baseline module.
 
 .PHONY: test
 test: ## Run Terraform contract tests with mock providers.
-	terraform -chdir=modules/baseline test
+	@for dir in $(TEST_ROOTS); do \
+		echo "== test $$dir"; \
+		terraform -chdir=$$dir test || exit 1; \
+	done
 
 .PHONY: scan
 scan: ## Run Checkov with .checkov.yaml.

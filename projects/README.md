@@ -31,6 +31,6 @@ A project without its own state can be documentation-only until it needs to appl
 
 | Project | Environment | State key | Status |
 | --- | --- | --- | --- |
-| _none yet_ | — | — | — |
+| [aws-bedrock](aws-bedrock/README.md) | dev | `base-terraform/projects/aws-bedrock/terraform.tfstate` | Accepted |
 
 Add a row when a project directory is created.

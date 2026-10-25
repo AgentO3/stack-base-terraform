@@ -14,6 +14,7 @@ adr-007-ci-gates.sh
 adr-008-toolchain.sh
 adr-009-prek.sh
 bdr-contracts.sh
+project-aws-bedrock.sh
 "
 
 failed=0

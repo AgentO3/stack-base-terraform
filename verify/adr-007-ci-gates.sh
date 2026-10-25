@@ -27,7 +27,8 @@ file_has "$ci" 'checkout@v[0-9]+' "checkout action pinned to a major tag"
 file_has Makefile 'terraform fmt -check -recursive' "Makefile implements the format check"
 # shellcheck disable=SC2016 # the Makefile text contains a literal $$dir
 file_has Makefile 'terraform -chdir=\$\$dir validate' "Makefile implements validate"
-file_has Makefile 'terraform -chdir=modules/baseline test' "Makefile implements terraform test"
+# shellcheck disable=SC2016 # the Makefile text contains a literal $$dir
+file_has Makefile 'terraform -chdir=\$\$dir test' "Makefile implements terraform test"
 file_has Makefile 'checkov -d' "Makefile implements the policy scan"
 
 if [ -f .checkov.yaml ]; then
