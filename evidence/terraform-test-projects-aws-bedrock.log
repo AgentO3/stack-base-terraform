@@ -1,0 +1,15 @@
+tests/bedrock.tftest.hcl... in progress
+  run "guardrail_blocks_prompt_attack"... pass
+  run "guardrail_redacts_pii"... pass
+  run "guardrail_version_is_published"... pass
+  run "prompt_logging_is_enabled"... pass
+  run "invoke_role_covers_only_the_approved_models"... pass
+  run "deploy_role_is_project_scoped"... pass
+  run "rejects_unapproved_environment"... pass
+  run "rejects_malformed_region"... pass
+  run "rejects_empty_model_list"... pass
+  run "requires_baseline_tags"... pass
+tests/bedrock.tftest.hcl... tearing down
+tests/bedrock.tftest.hcl... pass
+
+Success! 10 passed, 0 failed.

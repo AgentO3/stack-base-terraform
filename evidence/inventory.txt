@@ -1,0 +1,7 @@
+tracked_files: 81
+adrs: 9
+bdrs: 6
+specs: 12
+verifiers: 11
+terraform_roots: 4
+test_runs: 22

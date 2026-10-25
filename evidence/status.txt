@@ -1,0 +1,26 @@
+Evidence for source commit 0f952dfa7229a5aa413e777bf12a1a3db410ecfc
+
+PASS  make check
+PASS  terraform test modules/baseline
+PASS  terraform test projects/aws-bedrock
+PASS  verify-all
+PASS  checkov (checkov==3.2.520)
+PASS  CI run for source commit
+
+verdict: COMPLETE
+
+Artifacts:
+  README.md
+  checkov-results.json
+  checkov-summary.txt
+  checkov.stdout.log
+  ci-run.json
+  inventory.txt
+  make-check.log
+  manifest.sha256
+  provenance.txt
+  status.txt
+  terraform-test-modules-baseline.log
+  terraform-test-projects-aws-bedrock.log
+  tooling.txt
+  verify-all.log

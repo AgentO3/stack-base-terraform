@@ -1,0 +1,17 @@
+tests/baseline.tftest.hcl... in progress
+  run "audit_key_is_rotated"... pass
+  run "log_bucket_blocks_public_access"... pass
+  run "log_bucket_is_versioned_and_encrypted"... pass
+  run "account_public_access_block_is_on"... pass
+  run "trail_is_multi_region_and_validated"... pass
+  run "log_groups_have_bounded_retention"... pass
+  run "config_recorder_is_enabled"... pass
+  run "budget_has_forecast_and_actual_alerts"... pass
+  run "deploy_role_is_named_for_the_stack"... pass
+  run "rejects_unapproved_environment"... pass
+  run "rejects_malformed_region"... pass
+  run "requires_baseline_tags"... pass
+tests/baseline.tftest.hcl... tearing down
+tests/baseline.tftest.hcl... pass
+
+Success! 12 passed, 0 failed.

@@ -1,0 +1,5 @@
+checkov_version: 3.2.520
+passed: 124
+failed: 0
+skipped: 0
+resources_scanned: 49

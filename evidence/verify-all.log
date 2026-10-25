@@ -1,0 +1,226 @@
+
+== ADR-001 — Terraform ==
+  PASS  environments/dev/versions.tf present
+  PASS  environments/dev/main.tf present
+  PASS  environments/dev/variables.tf present
+  PASS  environments/dev/outputs.tf present
+  PASS  dev pins the Terraform CLI exactly
+  PASS  dev declares the AWS provider
+  PASS  dev lockfile committed
+  PASS  environments/prod/versions.tf present
+  PASS  environments/prod/main.tf present
+  PASS  environments/prod/variables.tf present
+  PASS  environments/prod/outputs.tf present
+  PASS  prod pins the Terraform CLI exactly
+  PASS  prod declares the AWS provider
+  PASS  prod lockfile committed
+  PASS  no competing IaC definition at the stack root
+  PASS  terraform fmt -check exits 0
+16/16 passed
+
+== ADR-002 — Remote state ==
+  PASS  dev declares an S3 backend
+  PASS  dev encrypts remote state
+  PASS  dev configures a lock table
+  PASS  dev uses its own state key
+  PASS  prod declares an S3 backend
+  PASS  prod encrypts remote state
+  PASS  prod configures a lock table
+  PASS  prod uses its own state key
+  PASS  .gitignore excludes state files
+  PASS  no state file in the working tree
+  PASS  ADR-002 recorded
+11/11 passed
+
+== ADR-003 — Environments ==
+  PASS  environments/dev is a root module
+  PASS  dev has its own resource prefix
+  PASS  dev calls the shared baseline module
+  PASS  environments/prod is a root module
+  PASS  prod has its own resource prefix
+  PASS  prod calls the shared baseline module
+  PASS  no count/for_each environment switch
+  PASS  dev and prod use different state keys
+  PASS  README documents the environment layout
+9/9 passed
+
+== ADR-004 — Module layout ==
+  PASS  modules/baseline/main.tf present
+  PASS  modules/baseline/variables.tf present
+  PASS  modules/baseline/outputs.tf present
+  PASS  modules/baseline/versions.tf present
+  PASS  every module variable is typed (13/13)
+  PASS  bounded inputs carry validation blocks — 8 validations
+  PASS  every output has a description (9/9)
+  PASS  module has Terraform contract tests
+8/8 passed
+
+== ADR-005 — AWS baseline ==
+  PASS  dedicated audit KMS key
+  PASS  audit key rotation enabled
+  PASS  audit log bucket
+  PASS  bucket public access block
+  PASS  account public access block
+  PASS  CloudTrail trail
+  PASS  trail is multi-Region
+  PASS  trail validates log files
+  PASS  trail CloudWatch log group
+  PASS  log retention is explicit
+  PASS  AWS Config recorder
+  PASS  AWS Config recording status
+  PASS  monthly cost budget
+  PASS  forecasted budget alert
+  PASS  actual budget alert
+  PASS  every bucket is encrypted (2/2)
+  PASS  no IAM user or access key
+  PASS  terraform validate (baseline module) — [32m[1mSuccess![0m The configuration is valid. [0m
+18/18 passed
+
+== ADR-006 — OIDC workload identity ==
+  PASS  GitHub OIDC provider
+  PASS  GitHub OIDC issuer referenced
+  PASS  trust uses AssumeRoleWithWebIdentity
+  PASS  trust checks the audience
+  PASS  trust checks the subject
+  PASS  trust is scoped to repository and branch
+  PASS  no AWS access key id in the tree
+  PASS  no IAM user or access key resource
+8/8 passed
+
+== ADR-007 — CI gates ==
+  PASS  CI workflow exists
+  PASS  workflow has a name
+  PASS  workflow declares permissions
+  PASS  workflow defaults to contents: read
+  PASS  every job has a timeout
+  PASS  workflow declares concurrency
+  PASS  CI runs the format check
+  PASS  CI runs validate
+  PASS  CI runs terraform test
+  PASS  CI runs the policy scan
+  PASS  checkout action pinned to a major tag
+  PASS  Makefile implements the format check
+  PASS  Makefile implements validate
+  PASS  Makefile implements terraform test
+  PASS  Makefile implements the policy scan
+  PASS  Checkov configuration committed
+  PASS  Makefile exposes a check target
+  PASS  check target includes fmt-check
+  PASS  non-GitHub actions are pinned to a full SHA
+19/19 passed
+
+== ADR-008 — Pinned toolchain ==
+  PASS  .terraform-version present — 1.8.4
+  PASS  dev required_version matches .terraform-version
+  PASS  prod required_version matches .terraform-version
+  PASS  dev provider uses a pessimistic constraint
+  PASS  prod provider uses a pessimistic constraint
+  PASS  module provider uses a pessimistic constraint
+  PASS  dev lockfile pins the AWS provider
+  PASS  prod lockfile pins the AWS provider
+  PASS  renovate.json committed
+  PASS  Renovate schema pinned
+  PASS  Renovate timezone set
+  PASS  Renovate schedule set
+  PASS  Renovate concurrent PR limit set
+  PASS  Renovate hourly PR limit set
+  PASS  Renovate dashboard enabled
+  PASS  Renovate vulnerability alerts enabled
+16/16 passed
+
+== ADR-009 — prek ==
+  PASS  prek.toml present
+  PASS  single hook runner
+  PASS  secret detection hook configured
+  PASS  trailing-whitespace hook configured
+  PASS  end-of-file-fixer hook configured
+  PASS  check-yaml hook configured
+  PASS  check-merge-conflict hook configured
+  PASS  check-added-large-files hook configured
+  PASS  terraform fmt hook configured
+  PASS  terraform validate hook configured
+  PASS  commit-msg stage configured
+  PASS  remote hooks pin a tag or SHA
+  PASS  README documents prek install
+13/13 passed
+
+== BDR contracts ==
+  PASS  BDR index present
+  PASS  BDR-001 heading matches its file name
+  PASS  BDR-001 has Status
+  PASS  BDR-001 has Behavior
+  PASS  BDR-001 has Context
+  PASS  BDR-001 has Acceptance Criteria
+  PASS  BDR-001 has Verification
+  PASS  BDR-001 status is Accepted
+  PASS  BDR-001 is listed in the index
+  PASS  BDR-002 heading matches its file name
+  PASS  BDR-002 has Status
+  PASS  BDR-002 has Behavior
+  PASS  BDR-002 has Context
+  PASS  BDR-002 has Acceptance Criteria
+  PASS  BDR-002 has Verification
+  PASS  BDR-002 status is Accepted
+  PASS  BDR-002 is listed in the index
+  PASS  BDR-003 heading matches its file name
+  PASS  BDR-003 has Status
+  PASS  BDR-003 has Behavior
+  PASS  BDR-003 has Context
+  PASS  BDR-003 has Acceptance Criteria
+  PASS  BDR-003 has Verification
+  PASS  BDR-003 status is Accepted
+  PASS  BDR-003 is listed in the index
+  PASS  BDR-004 heading matches its file name
+  PASS  BDR-004 has Status
+  PASS  BDR-004 has Behavior
+  PASS  BDR-004 has Context
+  PASS  BDR-004 has Acceptance Criteria
+  PASS  BDR-004 has Verification
+  PASS  BDR-004 status is Accepted
+  PASS  BDR-004 is listed in the index
+  PASS  BDR-005 heading matches its file name
+  PASS  BDR-005 has Status
+  PASS  BDR-005 has Behavior
+  PASS  BDR-005 has Context
+  PASS  BDR-005 has Acceptance Criteria
+  PASS  BDR-005 has Verification
+  PASS  BDR-005 status is Accepted
+  PASS  BDR-005 is listed in the index
+  PASS  BDR-006 heading matches its file name
+  PASS  BDR-006 has Status
+  PASS  BDR-006 has Behavior
+  PASS  BDR-006 has Context
+  PASS  BDR-006 has Acceptance Criteria
+  PASS  BDR-006 has Verification
+  PASS  BDR-006 status is Accepted
+  PASS  BDR-006 is listed in the index
+  PASS  BDR records present — 6 records
+50/50 passed
+
+== Project — aws-bedrock ==
+  PASS  projects/aws-bedrock/README.md present
+  PASS  projects/aws-bedrock/versions.tf present
+  PASS  projects/aws-bedrock/main.tf present
+  PASS  projects/aws-bedrock/variables.tf present
+  PASS  projects/aws-bedrock/outputs.tf present
+  PASS  projects/aws-bedrock/backend.hcl.example present
+  PASS  project pins the Terraform CLI exactly
+  PASS  project uses its own state key
+  PASS  project does not re-create baseline resources
+  PASS  guardrail defined
+  PASS  guardrail version published
+  PASS  prompt-attack filter configured
+  PASS  SSN blocked
+  PASS  prompt logging configured
+  PASS  per-model alarms defined
+  PASS  invoke policy targets foundation-model ARNs
+  PASS  deploy role uses OIDC
+  PASS  deploy role is scoped to repository and branch
+  PASS  README names the BDRs it must preserve
+  PASS  README documents the state key
+  PASS  project has Terraform contract tests
+  PASS  project is listed in the projects index
+  PASS  terraform validate (projects/aws-bedrock) — [32m[1mSuccess![0m The configuration is valid. [0m
+23/23 passed
+
+all 11 verifiers passed
