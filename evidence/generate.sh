@@ -69,7 +69,17 @@ checkov_code=$?
 
 raw_json="$(find "$OUT/checkov" -name '*.json' 2>/dev/null | head -1)"
 if [ -n "$raw_json" ]; then
-	mv "$raw_json" "$OUT/checkov-results.json"
+	python3 - "$raw_json" "$OUT/checkov-results.json" <<'PY'
+import sys
+
+source, destination = sys.argv[1], sys.argv[2]
+with open(source, "rb") as fh:
+    data = fh.read()
+if not data.endswith(b"\n"):
+    data += b"\n"
+with open(destination, "wb") as fh:
+    fh.write(data)
+PY
 fi
 rm -rf "$OUT/checkov"
 
