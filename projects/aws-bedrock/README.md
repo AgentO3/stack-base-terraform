@@ -24,7 +24,7 @@ This project sits on top of the stack baseline. It assumes an account where `mod
 1. The stack baseline applied in the target account.
 2. **Model access enabled** for each `model_ids` entry, in every Region you call. AWS grants this per account and per Region, and Terraform cannot manage it.
 3. The GitHub OIDC provider that the baseline creates.
-4. A `backend.hcl` from `backend.hcl.example`, with the shared state bucket and lock table.
+4. A `backend.hcl` from `backend.hcl.example`, with the shared state bucket and `use_lockfile = true`.
 
 ## State
 
