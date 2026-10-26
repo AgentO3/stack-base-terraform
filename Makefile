@@ -6,7 +6,7 @@ ENVS := dev prod
 PROJECT_ROOTS := $(patsubst %/versions.tf,%,$(wildcard projects/*/versions.tf))
 TF_ROOTS := environments/dev environments/prod modules/baseline $(PROJECT_ROOTS)
 TEST_ROOTS := modules/baseline $(PROJECT_ROOTS)
-TF_VERSION := 1.8.4
+TF_VERSION := 1.11.4
 
 .PHONY: help
 help: ## Show this help.

@@ -83,7 +83,7 @@ The `plan` and `apply` jobs stay skipped until the repository variable `AWS_ROLE
 
 ### 5. Invariants
 
-- Terraform CLI is pinned exactly (`= 1.8.4`); providers use pessimistic constraints.
+- Terraform CLI is pinned exactly (`= 1.11.4`); providers use pessimistic constraints.
 - The lockfile is committed in every root and in the module.
 - No credential material in the repository; CI authenticates through OIDC only.
 - Every taggable resource receives `Owner`, `CostCenter`, `Application`, `Environment`, `ManagedBy`, `Stack`.
