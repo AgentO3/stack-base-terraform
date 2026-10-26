@@ -29,7 +29,6 @@ variables {
   environment       = "dev"
   region            = "us-east-1"
   state_bucket_name = "example-tfstate"
-  state_lock_table  = "example-tflock"
   model_ids         = ["amazon.nova-lite-v1:0"]
 
   tags = {
@@ -137,6 +136,11 @@ run "deploy_role_is_project_scoped" {
   assert {
     condition     = length(aws_cloudwatch_metric_alarm.model) == 5 * length(var.alarm_model_ids)
     error_message = "Each monitored model gets five alarms."
+  }
+
+  assert {
+    condition     = !strcontains(aws_iam_role_policy.deploy[0].policy, "dynamodb:")
+    error_message = "The deploy role must not grant DynamoDB actions; state locks use S3 lockfiles (ADR-010)."
   }
 }
 

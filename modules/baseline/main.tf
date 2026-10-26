@@ -16,10 +16,6 @@ locals {
     "arn:${local.partition}:s3:::${var.state_bucket_name}/*",
   ]
 
-  state_lock_resources = var.state_lock_table == "" ? [] : [
-    "arn:${local.partition}:dynamodb:${local.region}:${local.account_id}:table/${var.state_lock_table}",
-  ]
-
   managed_bucket_arns = [
     "arn:${local.partition}:s3:::${var.name_prefix}-*",
     "arn:${local.partition}:s3:::${var.name_prefix}-*/*",
@@ -506,16 +502,6 @@ resource "aws_iam_role_policy" "deploy" {
           "s3:DeleteObject",
         ]
         Resource = local.state_bucket_resources
-      },
-      {
-        Sid    = "TerraformStateLock"
-        Effect = "Allow"
-        Action = [
-          "dynamodb:GetItem",
-          "dynamodb:PutItem",
-          "dynamodb:DeleteItem",
-        ]
-        Resource = local.state_lock_resources
       },
       {
         Sid    = "ManagedBuckets"

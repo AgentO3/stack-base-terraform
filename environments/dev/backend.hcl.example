@@ -2,4 +2,4 @@ bucket         = "REPLACE-WITH-STATE-BUCKET"
 key            = "base-terraform/dev/terraform.tfstate"
 region         = "us-east-1"
 encrypt        = true
-dynamodb_table = "REPLACE-WITH-LOCK-TABLE"
+use_lockfile   = true

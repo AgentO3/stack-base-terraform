@@ -25,5 +25,4 @@ module "baseline" {
   github_branch             = var.github_branch
   github_oidc_provider_arn  = var.github_oidc_provider_arn
   state_bucket_name         = var.state_bucket_name
-  state_lock_table          = var.state_lock_table
 }

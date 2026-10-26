@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Verify ADR-002 — Keep Terraform state in S3 with DynamoDB locking.
+# Verify ADR-002 — Keep Terraform state in S3.
+# ADR-010 supersedes the DynamoDB lock; adr-010-s3-lockfile.sh checks the lock.
 # shellcheck source=./lib.sh
 . "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
@@ -13,8 +14,6 @@ for env in dev prod; do
 	example="$root/backend.hcl.example"
 	file_has "$example" '^encrypt[[:space:]]*=[[:space:]]*true' \
 		"$env encrypts remote state"
-	file_has "$example" '^dynamodb_table[[:space:]]*=' \
-		"$env configures a lock table"
 	file_has "$example" "^key[[:space:]]*=[[:space:]]*\"base-terraform/$env/" \
 		"$env uses its own state key"
 done

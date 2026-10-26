@@ -57,7 +57,6 @@ locals {
     kms_keys    = "arn:${local.partition}:kms:${local.region}:${local.account_id}:key/*"
     state       = "arn:${local.partition}:s3:::${var.state_bucket_name}"
     state_objs  = "arn:${local.partition}:s3:::${var.state_bucket_name}/*"
-    state_lock  = "arn:${local.partition}:dynamodb:${local.region}:${local.account_id}:table/${var.state_lock_table}"
     oidc_issuer = "arn:${local.partition}:iam::${local.account_id}:oidc-provider/token.actions.githubusercontent.com"
   }
 }
@@ -327,12 +326,6 @@ resource "aws_iam_role_policy" "deploy" {
         Effect   = "Allow"
         Action   = ["s3:ListBucket", "s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
         Resource = [local.project_resources.state, local.project_resources.state_objs]
-      },
-      {
-        Sid      = "TerraformStateLock"
-        Effect   = "Allow"
-        Action   = ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:DeleteItem"]
-        Resource = local.project_resources.state_lock
       },
       {
         Sid    = "BedrockProject"
