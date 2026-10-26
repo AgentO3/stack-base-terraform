@@ -26,7 +26,7 @@ This stack is the composition of the specs under [`docs/specs/`](docs/specs/). I
 ```
 GitHub Actions ──OIDC──▶ IAM role ──assume──▶ AWS account
       │                                         │
-      └── terraform plan/apply ──▶ S3 state + DynamoDB lock
+      └── terraform plan/apply ──▶ S3 state + S3 lockfile
 ```
 
 ### 1. Layout
@@ -57,17 +57,13 @@ Environments are directories, never `count` or `for_each` switches. Each root mo
 
 ### 3. State bootstrap
 
-The state bucket and lock table must exist before the first `init`, so they are created once by hand. This is the only console/CLI step, and it is recorded in [ADR-002](docs/adr/002-remote-state-in-s3.md).
+The state bucket must exist before the first `init`, so it is created once by hand. This is the only console/CLI step, and it is recorded in [ADR-002](docs/adr/002-remote-state-in-s3.md). Terraform locks state with a `.tflock` object in the same bucket (`use_lockfile = true`), so no lock table is needed ([ADR-010](docs/adr/010-s3-native-state-locking.md)).
 
 ```bash
 aws s3api create-bucket --bucket <state-bucket> --region us-east-1
 aws s3api put-bucket-versioning --bucket <state-bucket> --versioning-configuration Status=Enabled
 aws s3api put-bucket-encryption --bucket <state-bucket> \
   --server-side-encryption-configuration '{"Rules":[{"ApplyServerSideEncryptionByDefault":{"SSEAlgorithm":"aws:kms"}}]}'
-aws dynamodb create-table --table-name <lock-table> \
-  --attribute-definitions AttributeName=LockID,AttributeType=S \
-  --key-schema AttributeName=LockID,KeyType=HASH \
-  --billing-mode PAY_PER_REQUEST
 ```
 
 Then copy `environments/<env>/backend.hcl.example` to `backend.hcl`, fill it in, and run `terraform init -backend-config=backend.hcl`.
@@ -83,7 +79,7 @@ The `plan` and `apply` jobs stay skipped until the repository variable `AWS_ROLE
 
 ### 5. Invariants
 
-- Terraform CLI is pinned exactly (`= 1.8.4`); providers use pessimistic constraints.
+- Terraform CLI is pinned exactly (`= 1.11.4`); providers use pessimistic constraints.
 - The lockfile is committed in every root and in the module.
 - No credential material in the repository; CI authenticates through OIDC only.
 - Every taggable resource receives `Owner`, `CostCenter`, `Application`, `Environment`, `ManagedBy`, `Stack`.

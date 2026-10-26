@@ -26,7 +26,6 @@ variables {
   approved_regions  = ["us-east-1", "us-west-2"]
   github_repository = "example/base-terraform"
   state_bucket_name = "example-tfstate"
-  state_lock_table  = "example-tflock"
 
   tags = {
     Owner       = "platform"
@@ -174,6 +173,20 @@ run "deploy_role_is_named_for_the_stack" {
   assert {
     condition     = length(aws_iam_openid_connect_provider.github) == 1
     error_message = "The module must create the GitHub OIDC provider when none is supplied."
+  }
+}
+
+run "deploy_role_locks_state_in_s3" {
+  command = plan
+
+  assert {
+    condition     = strcontains(aws_iam_role_policy.deploy.policy, "arn:aws:s3:::example-tfstate/*")
+    error_message = "The deploy role must reach the state bucket objects, which include the .tflock object."
+  }
+
+  assert {
+    condition     = !strcontains(aws_iam_role_policy.deploy.policy, "dynamodb:")
+    error_message = "The deploy role must not grant DynamoDB actions; state locks use S3 lockfiles (ADR-010)."
   }
 }
 

@@ -24,7 +24,7 @@ Terraform CLI and provider versions change resource schemas. A range in `require
 
 ## Decision Outcome
 
-We will pin the CLI exactly (`= 1.8.4`), constrain providers pessimistically (`~> 6.70.0`), commit the lockfile, and let Renovate open grouped routine PRs weekly and ungrouped security PRs immediately.
+We will pin the CLI exactly (`= 1.11.4`), constrain providers pessimistically (`~> 6.70.0`), commit the lockfile, and let Renovate open grouped routine PRs weekly and ungrouped security PRs immediately.
 
 The lockfile is the reproducibility boundary; the constraint is the review boundary; Renovate is the maintenance boundary.
 
@@ -32,7 +32,7 @@ The lockfile is the reproducibility boundary; the constraint is the review bound
 
 - Positive: `terraform init -lockfile=readonly` proves the lockfile matches the constraints.
 - Positive: a provider major bump is a reviewed PR with a failing gate if anything breaks.
-- Negative: exact CLI pinning means every contributor and CI image must install 1.8.4.
+- Negative: exact CLI pinning means every contributor and CI image must install 1.11.4.
 - Negative: Renovate configuration is another file to own, and a broken config blocks upgrades silently.
 - Neutral: the `.terraform-version` file and the `required_version` value are checked for agreement by the ADR-008 verifier.
 

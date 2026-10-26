@@ -58,8 +58,3 @@ variable "state_bucket_name" {
   description = "S3 bucket that holds this environment's Terraform state."
   type        = string
 }
-
-variable "state_lock_table" {
-  description = "DynamoDB table used for state locking."
-  type        = string
-}

@@ -15,7 +15,7 @@ for f in README.md versions.tf main.tf variables.tf outputs.tf backend.hcl.examp
 	fi
 done
 
-file_has "$project/versions.tf" 'required_version[[:space:]]*=[[:space:]]*"= 1\.8\.4"' \
+file_has "$project/versions.tf" 'required_version[[:space:]]*=[[:space:]]*"= 1\.11\.4"' \
 	"project pins the Terraform CLI exactly"
 file_has "$project/backend.hcl.example" '^key[[:space:]]*=[[:space:]]*"base-terraform/projects/aws-bedrock/' \
 	"project uses its own state key"

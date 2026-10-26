@@ -13,6 +13,7 @@ adr-006-oidc.sh
 adr-007-ci-gates.sh
 adr-008-toolchain.sh
 adr-009-prek.sh
+adr-010-s3-lockfile.sh
 bdr-contracts.sh
 project-aws-bedrock.sh
 "

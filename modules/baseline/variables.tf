@@ -68,12 +68,6 @@ variable "state_bucket_name" {
   default     = ""
 }
 
-variable "state_lock_table" {
-  description = "DynamoDB table used for Terraform state locking."
-  type        = string
-  default     = ""
-}
-
 variable "monthly_budget_usd" {
   description = "Monthly account budget in USD. A notification fires at the configured thresholds."
   type        = number
